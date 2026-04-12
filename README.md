@@ -14,10 +14,11 @@ touch CMakeLists.txt
 nano CMakeLists.txt
 
 cmake_minimum_required(VERSION 3.4)
-project(formatter_lib)
+project(formatter_project)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_library(formatter_lib STATIC ${CMAKE_CURRENT_SOURCE_DIR}/formatter.cpp)
+add_library(formatter_lib STATIC formatter.cpp)
+target_include_directories(formatter_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 cmake -B build
 cmake --build build
@@ -38,10 +39,9 @@ cmake_minimum_required(VERSION 3.4)
 project(formatter_ex_lib)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../formatter_lib formatter_lib_dir)
-add_library(formatter_ex_lib STATIC ${CMAKE_CURRENT_SOURCE_DIR}/formatter_ex.cpp)
-target_include_directories(formatter_ex_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../formatter_lib)
-target_link_libraries(formatter_ex_lib formatter_lib)
+add_library(formatter_ex_lib STATIC formatter_ex.cpp)
+target_include_directories(formatter_ex_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(formatter_ex_lib PRIVATE formatter_lib)
 
 cmake -B build
 cmake --build build
@@ -66,8 +66,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../formatter_ex_lib formatter_ex_lib_dir)
 add_executable(hello_world ${CMAKE_CURRENT_SOURCE_DIR}/hello_world.cpp)
-target_include_directories(hello_world PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../formatter_ex_lib)
-target_link_libraries(hello_world PRIVATE formatter_ex_lib)
+target_include_directories(hello_world PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../formatter_ex_lib)
+target_link_libraries(hello_world formatter_ex_lib)
 
 cmake -B build
 cmake --build build
@@ -86,7 +86,8 @@ cmake_minimum_required(VERSION 3.4)
 project(solver_lib)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_library(solver_lib STATIC ${CMAKE_CURRENT_SOURCE_DIR}/solver.cpp)
+add_library(solver_lib STATIC solver.cpp)
+target_include_directories(solver_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 ```
 2) создаем исполняемый файл, подключая созданные библиотеки
 ```
@@ -98,8 +99,6 @@ cmake_minimum_required(VERSION 3.4)
 project(solver)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../formatter_ex_lib formatter_ex_lib_dir)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../solver_lib solver_lib_dir)
 add_executable(solver ${CMAKE_CURRENT_SOURCE_DIR}/equation.cpp)
 target_include_directories(solver PRIVATE
 ${CMAKE_CURRENT_SOURCE_DIR}/../formatter_ex_lib
