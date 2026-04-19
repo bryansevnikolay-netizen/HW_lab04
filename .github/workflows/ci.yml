@@ -9,7 +9,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: action/checkout@v4
+    - uses: actions/checkout@v4
     - name: Configure CMake
       run: cmake -B build -S .
     - name: Build
@@ -17,20 +17,20 @@ jobs:
     - name: Run solver
       run: ./build/solver_application/solver
     - name: Run hello_world
-      run: .build/hello_world_application/hello_world
+      run: ./build/hello_world_application/hello_world
      
-build-windows:
+  build-windows:
     runs-on: windows-latest
     steps:
-    - uses: action/checkout@v4
+    - uses: actions/checkout@v4
     - name: Configure CMake
       run: cmake -B build -S .
     - name: Build
       run: cmake --build build --config Release
-    -name: Run solver
+    - name: Run solver
       run: ./build/solver_application/Release/solver.exe
     - name: Run hello_world
-      run: .build/hello_world_application/Release/hello_world.exe
+      run: ./build/hello_world_application/Release/hello_world.exe
 
 
 
