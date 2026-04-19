@@ -1,0 +1,36 @@
+name: CI for Lab04
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: action/checkout@v4
+    - name: Configure CMake
+      run: cmake -B build -S .
+    - name: Build
+      run: cmake --build build -j2
+    - name: Run solver
+      run: ./build/solver_application/solver
+    - name: Run hello_world
+      run: .build/hello_world_application/hello_world
+     
+build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: action/checkout@v4
+    - name: Configure CMake
+      run: cmake -B build -S .
+    - name: Build
+      run: cmake --build build --config Release
+    -name: Run solver
+      run: ./build/solver_application/Release/solver.exe
+    - name: Run hello_world
+      run: .build/hello_world_application/Release/hello_world.exe
+
+
+
