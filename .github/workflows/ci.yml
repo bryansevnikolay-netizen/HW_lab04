@@ -28,9 +28,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Configure CMake
         run: |
-          cmake -B build -S . \
-            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
-            -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }}
+          cmake -B build -S . -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }}
       - name: Build
         run: cmake --build build --config Release -j2
       - name: Run solver
