@@ -6,31 +6,44 @@ on:
   pull_request:
     branches: [ main, master ]
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  build:
+    name: ${{ matrix.os}} - ${{ matrix.compiler }}
+    runs-on: ${{ matrix.os}}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+            c_compiler: gcc
+            cxx_compiler: g++
+          - os: ubuntu-latest
+            compiler: clang
+            c_compiler: clang
+            cxx_compiler: clang++
+          - os: windows-latest
+            compiler: msvc
+            c_compiler: cl
+            cxx_compiler: cl
     steps:
-    - uses: actions/checkout@v4
-    - name: Configure CMake
-      run: cmake -B build -S .
-    - name: Build
-      run: cmake --build build -j2
-    - name: Run solver
-      run: ./build/solver_application/solver
-    - name: Run hello_world
-      run: ./build/hello_world_application/hello_world
-     
-  build-windows:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Configure CMake
-      run: cmake -B build -S .
-    - name: Build
-      run: cmake --build build --config Release
-    - name: Run solver
-      run: ./build/solver_application/Release/solver.exe
-    - name: Run hello_world
-      run: ./build/hello_world_application/Release/hello_world.exe
-
-
-
+      - uses: actions/checkout@v4
+      - name: Configure CMake
+        run: |
+          cmake -B build -S . \
+            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+            -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }}
+      - name: Build
+        run: cmake --build build --config Release -j2
+      - name: Run solver
+        run: |
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            ./build/solver_application/Release/solver.exe
+          else
+            ./build/solver_application/solver
+          fi
+      - name: Run hello_world
+        run: |
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            ./build/hello_world_application/Release/hello_world.exe
+          else
+            ./build/hello_world_application/hello_world
+          fi
